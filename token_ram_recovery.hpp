@@ -24,6 +24,10 @@ namespace eosio {
          void create( account_name issuer,
                       asset        maximum_supply);
 
+         void destroytoken( symbol_type symbol );
+
+         void destroyacc( symbol_type symbol, account_name acc );
+
          void issue( account_name to, asset quantity, string memo );
 
          void transfer( account_name from,

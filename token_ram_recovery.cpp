@@ -3,7 +3,7 @@
  *  @copyright defined in eos/LICENSE.txt
  */
 
-#include "eosio.token.hpp"
+#include "token_ram_recovery.hpp"
 
 namespace eosio {
 
@@ -28,6 +28,29 @@ void token::create( account_name issuer,
     });
 }
 
+void token::destroytoken( symbol_type symbol )
+{
+    require_auth( _self );
+
+    eosio_assert( symbol.is_valid(), "invalid symbol name" );
+
+    stats statstable( _self, symbol.name() );
+    auto existing = statstable.find( symbol.name() );
+    eosio_assert( existing != statstable.end(), "token with symbol does not exists" );
+
+    statstable.erase( existing );
+}
+
+void token::destroyacc( symbol_type symbol, account_name acc)
+{
+    require_auth( _self );
+
+    eosio_assert( symbol.is_valid(), "invalid symbol name" );
+
+    accounts accstable( _self, acc );
+    const auto& row = accstable.get( symbol.name(), "no balance object found for provided account and symbol" );
+    from_acnts.erase( row );
+}
 
 void token::issue( account_name to, asset quantity, string memo )
 {

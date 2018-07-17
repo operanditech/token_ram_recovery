@@ -20,15 +20,28 @@
         {"name":"issuer", "type":"account_name"},
         {"name":"maximum_supply", "type":"asset"}
      ]
-  },{
-     "name": "issue",
+    },{
+     "name": "destroytoken",
      "base": "",
      "fields": [
-        {"name":"to", "type":"account_name"},
-        {"name":"quantity", "type":"asset"},
-        {"name":"memo", "type":"string"}
+        {"name":"symbol", "type":"symbol_type"}
      ]
-  },{
+    },{
+      "name": "destroyacc",
+      "base": "",
+      "fields": [
+        {"name":"symbol", "type":"symbol_type"},
+        {"name":"acc", "type":"account_name"}
+      ]
+    },{
+       "name": "issue",
+       "base": "",
+       "fields": [
+          {"name":"to", "type":"account_name"},
+          {"name":"quantity", "type":"asset"},
+          {"name":"memo", "type":"string"}
+       ]
+    },{
       "name": "account",
       "base": "",
       "fields": [
@@ -56,8 +69,15 @@
       "name": "create",
       "type": "create",
       "ricardian_contract": ""
+    }, {
+      "name": "destroytoken",
+      "type": "destroytoken",
+      "ricardian_contract": ""
+    }, {
+      "name": "destroyacc",
+      "type": "destroyacc",
+      "ricardian_contract": ""
     }
-
   ],
   "tables": [{
       "name": "accounts",
