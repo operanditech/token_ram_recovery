@@ -47,9 +47,9 @@ void token::destroyacc( symbol_type symbol, account_name acc)
 
     eosio_assert( symbol.is_valid(), "invalid symbol name" );
 
-    accounts accstable( _self, acc );
-    const auto& row = accstable.get( symbol.name(), "no balance object found for provided account and symbol" );
-    from_acnts.erase( row );
+    accounts acctable( _self, acc );
+    const auto& row = acctable.get( symbol.name(), "no balance object found for provided account and symbol" );
+    acctable.erase( row );
 }
 
 void token::issue( account_name to, asset quantity, string memo )
