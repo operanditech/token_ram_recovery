@@ -1,8 +1,3 @@
-/**
- *  @file
- *  @copyright defined in eos/LICENSE.txt
- */
-
 #include "token_ram_recovery.hpp"
 
 namespace eosio {
