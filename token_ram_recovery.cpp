@@ -1,31 +1,55 @@
-#include "token_ram_recovery.hpp"
+#include <eosio/asset.hpp>
+#include <eosio/eosio.hpp>
 
-namespace eosio {
+#include <string>
 
-void token::destroytoken( string symbol )
+using namespace eosio;
+using std::string;
+
+class[[eosio::contract]] token : public contract
 {
-    require_auth( _self );
+private:
+    struct [[eosio::table]] account
+    {
+        asset balance;
 
-    symbol_type sym = string_to_symbol(0, symbol.c_str());
+        uint64_t primary_key() const { return balance.symbol.code().raw(); }
+    };
 
-    stats statstable( _self, sym.name() );
-    auto existing = statstable.find( sym.name() );
-    eosio_assert( existing != statstable.end(), "token with symbol does not exist" );
+    struct [[eosio::table]] currency_stats
+    {
+        asset supply;
+        asset max_supply;
+        name issuer;
 
-    statstable.erase( existing );
-}
+        uint64_t primary_key() const { return supply.symbol.code().raw(); }
+    };
 
-void token::destroyacc( string symbol, account_name acc)
-{
-    require_auth( _self );
+    typedef eosio::multi_index<name("accounts"), account> accounts;
+    typedef eosio::multi_index<name("stat"), currency_stats> stats;
 
-    symbol_type sym = string_to_symbol(0, symbol.c_str());
+public:
+    using contract::contract;
 
-    accounts acctable( _self, acc );
-    const auto& row = acctable.get( sym.name(), "no balance object found for provided account and symbol" );
-    acctable.erase( row );
-}
+    [[eosio::action]] void destroytoken(string symbol) {
+        require_auth(_self);
 
-} /// namespace eosio
+        symbol_code sym(symbol);
+        stats stats_table(_self, sym.raw());
+        auto existing = stats_table.find(sym.raw());
+        check(existing != stats_table.end(), "Token with symbol does not exist");
 
-EOSIO_ABI( eosio::token, (destroytoken)(destroyacc) )
+        stats_table.erase(existing);
+    };
+
+    [[eosio::action]] void destroyacc(string symbol, name account) {
+        require_auth(_self);
+
+        symbol_code sym(symbol);
+        accounts accounts_table(_self, account.value);
+        const auto &row = accounts_table.get(sym.raw(), "No balance object found for provided account and symbol");
+        accounts_table.erase(row);
+    };
+};
+
+EOSIO_DISPATCH(token, (destroytoken)(destroyacc))
